@@ -1,0 +1,68 @@
+" Make indentaiton 4 spaces
+set tabstop=4
+set softtabstop=0
+set expandtab
+set shiftwidth=4
+set smarttab
+
+set backspace=indent,eol,start
+set hlsearch
+set incsearch
+set nofoldenable
+set number
+set visualbell
+syntax on
+
+set grepprg=grep
+
+" Key bindings
+let mapleader = ","
+let maplocalleader = ","
+
+" Easier escaping
+inoremap jk <Esc>
+
+" Move between windows with just ctrl+movement
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
+nnoremap <C-L> <C-W>l
+nnoremap <C-H> <C-W>h
+
+" Shortcut to list cirrent buffers.
+nnoremap <leader>b :ls<CR>
+
+" Turn off highlighting when we hit escape.
+" This can cause weirdness when running in certain terminals under Linux.
+if has("win32")
+    nnoremap <esc> :nohlsearch<return><esc>
+endif
+
+" Toggle relative line numbers
+nnoremap <leader>r :set rnu!<CR>
+
+augroup FileExtensions
+    autocmd!
+    autocmd BufNewFile,BufRead *.html.twig set syntax=htmldjango
+augroup END
+
+" toggles the quickfix window. ---{{{
+let g:jah_Quickfix_Win_Height = 10
+
+command! -bang -nargs=? QFix call QFixToggle(<bang>0)
+function! QFixToggle(forced)
+    if exists("g:qfix_win") && a:forced == 0
+        cclose
+    else
+        execute "copen " . g:jah_Quickfix_Win_Height
+    endif
+endfunction
+
+" used to track the quickfix window
+augroup QFixToggle
+    autocmd!
+    autocmd BufWinEnter quickfix let g:qfix_win = bufnr("$")
+    autocmd BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif
+augroup END
+
+nnoremap <leader>q :QFix<CR>
+"--------}}}
