@@ -2,7 +2,7 @@ if &shell == 'powershell'
     " Use cmd.exe rather than Powershell so that all the plugins will work.
     set shell=C:\WINDOWS\system32\cmd.exe
     set shellcmdflag=/c
-    set shellquote= 
+    set shellquote=
     set shellxquote=(
 endif
 
@@ -10,7 +10,7 @@ endif
 set rtp+=~/.vim
 
 " Per docs, must be set before ALE is loaded.
-let g:ale_completion_enabled = 1
+let g:ale_completion_enabled = 0
 let g:ale_set_balloons = 1
 
 " Plug plugins - need plug.vim installed in ~/.vim/autoload/ ---{{{
@@ -54,8 +54,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'tobyS/pdv'
 
     " Themes
-    Plug 'ayu-theme/ayu-vim'
-    Plug 'drewtempelmeyer/palenight.vim'
+    "Plug 'ayu-theme/ayu-vim'
+    "Plug 'drewtempelmeyer/palenight.vim'
     Plug 'morhetz/gruvbox'
 
 call plug#end()
@@ -137,6 +137,10 @@ let maplocalleader = ","
 " Easier escaping
 inoremap jk <Esc>
 
+" Less annoying buffer swapping
+inoremap <C-Tab> <C-^>
+nnoremap <C-Tab> <C-^>
+
 " Move between windows with just ctrl+movement
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
@@ -164,6 +168,10 @@ endif
 
 " Toggle relative line numbers
 nnoremap <leader>r :set rnu!<CR>
+
+menu .1 &Utility.Toggle\ BufExplorer :ToggleBufExplorer<CR>
+menu .2 &Utility.Toggle\ NERDTree :NERDTreeToggle<CR>
+menu .3 &Utility.Fix\ Trailing\ Space :FixTrailingSpace<CR>
 
 augroup FileExtensions
     autocmd!
@@ -225,14 +233,6 @@ let g:airline_skip_empty_sections = 1
 let g:airline#extensions#gutentags#enabled = 1
 set laststatus=2
 
-" Add status of AsyncRun tasks to Airline status bar.
-"let g:asyncrun_status = 'stopped'
-"let g:airline_section_error = airline#section#create_right(['%{g:asyncrun_status}'])
-"augroup QuickfixStatus
-"    autocmd! BufWinEnter quickfix setlocal
-"        \ statusline=%t\ [%{g:asyncrun_status}]\ %{exists('w:quickfix_title')?\ '\ '.w:quickfix_title\ :\ ''}\ %=%-15(%l,%c%V%)\ %P
-"augroup END
-
 let g:airline#extensions#tabline#buffer_idx_mode = 1
 nmap <leader>1 <Plug>AirlineSelectTab1
 nmap <leader>2 <Plug>AirlineSelectTab2
@@ -247,28 +247,11 @@ nmap <leader>z <Plug>AirlineSelectPrevTab
 nmap <leader>x <Plug>AirlineSelectNextTab
 
 " CTags management
-" Set the tags file - look in current directory, the cpoptions uses CWD rather
-" than bugger dir.
+" Set the tags file - look in current directory, the cpoptions uses CWD.
 set tags=./tags,~/.vimtags
 set cpoptions+=d
-" Function to do tag update using AsyncRun plugin.
-"function! UpdateTags()
-"    if exists('g:auto_update_tags') && exists('*asyncrun#get_root')
-"        if !exists('g:auto_update_tags_flags')
-"            g:auto_update_tags_flags = ''
-"        endif
-        "silent execute "AsyncRun -cwd=" . asyncrun#get_root('%') . " ctags -R " . g:auto_update_tags_flags . " ."
-"        silent execute "AsyncRun -cwd=<root> ctags --output-format=e-ctags -R " . g:auto_update_tags_flags . " " . asyncrun#get_root('%')
-"    else
-"        "echom "Tag auto-update disabled"
-"    endif
-"endfunction
-"command! -nargs=0 UpdateTags call UpdateTags()
-"augroup tag_update
-"    autocmd!
-"    autocmd BufWritePost * :UpdateTags
-"augroup END
 
+" Remove trailing spaces from file.
 command! -nargs=0 FixTrailingSpace call execute("normal! mp:%s/\\s\\+$//e\<cr>`p")
 
 " phpunit settings
@@ -278,53 +261,31 @@ command! -nargs=0 FixTrailingSpace call execute("normal! mp:%s/\\s\\+$//e\<cr>`p
 let g:jah_Quickfix_Win_Height = 10
 let g:jah_Loclist_Win_Height = 10
 
-command! -bang -nargs=? QFix call QFixToggle(<bang>0)
-function! QFixToggle(forced)
-  if exists("g:qfix_win") && a:forced == 0
-    cclose
-  else
-    execute "copen " . g:jah_Quickfix_Win_Height
-  endif
+command! -bang -nargs=? QFix call QFixToggle()
+function! QFixToggle()
+    let nr = winnr("$")
+    cwindow "g:jah_Quickfix_Win_Height"
+    let nr2 = winnr("$")
+    if nr == nr2
+        cclose
+    endif
 endfunction
 
-command! -bang -nargs=? LocList call LocListToggle(<bang>0)
-function! LocListToggle(forced)
-  if exists("g:loclist_win") && a:forced == 0
-    lclose
-  else
-    execute "lopen " . g:jah_Loclist_Win_Height
-  endif
+command! -bang -nargs=? LocList call LocListToggle()
+function! LocListToggle()
+    let nr = winnr("$")
+    lwindow "g:jah_Loclist_Win_Height"
+    let nr2 = winnr("$")
+    if nr == nr2
+        lclose
+    endif
 endfunction
-
-" used to track the quickfix/loclist window
-augroup QFixToggle
- autocmd!
- autocmd BufWinEnter quickfix let g:qfix_win = bufnr("$")
- autocmd BufWinLeave * if exists("g:qfix_win") && expand("<abuf>") == g:qfix_win | unlet! g:qfix_win | endif
-augroup END
-augroup LocListToggle
- autocmd!
- autocmd BufWinEnter location let g:loclist_win = bufnr("$")
- autocmd BufWinLeave * if exists("g:loclist_win") && expand("<abuf>") == g:loclist_win | unlet! g:loclist_win | endif
-augroup END
-
-nnoremap <leader>q :QFix<CR>
-nnoremap <leader>l :LocList<CR>
-"--------}}}
 
 " vim-test settings
 let g:test#runner_commands = ['PHPUnit', 'Nose']
 
 " Settings from Learn VimScript the Hard Way -----{{{
 
-" Move line down in file
-"nnoremap - ddp
-" Move line up in file
-"nnoremap _ ddkP
-
-" Upercase the current word
-"inoremap <C-U> <ESC>viwUi
-"nnoremap <C-U> viwU
 function! FoldColumnToggle()
     if &foldcolumn
         setlocal foldcolumn=0
@@ -346,6 +307,7 @@ function! QuickfixToggle()
     endif
 endfunction
 
+nnoremap <leader>q :call QFixToggle()<cr>
 nnoremap <leader>f :call FoldColumnToggle()<cr>
 
 iabbrev funciton function
@@ -357,9 +319,6 @@ iabbrev jasdesc describe("", function() {<CR><CR>}
 nnoremap <leader>ve :vsplit $MYVIMRC<CR>
 nnoremap <leader>vs :source $MYVIMRC<CR>
 
-"nnoremap <leader>" viw<esc>a"<esc>bi"<esc>lel
-"vnoremap <leader>" <esc>`>a"<esc>`<i"<esc>`>ll
-
 nnoremap <leader>pb :belowright vsplit bufname("#")<CR>
 nnoremap <leader>w :match Error /\v +$/<CR>
 nnoremap <leader>W :match none<CR>
@@ -367,16 +326,6 @@ nnoremap / /\v
 "nnoremap <leader>g :silent execute "grep! -R " . shellescape(expand("<cWORD>")) . " ."<cr>:copen<cr>
 nnoremap <leader>a :cprevious
 nnoremap <leader>s :cnext
-
-" Replace inner/outer paren/brace content.
-"onoremap in( :<c-u>normal! f(v%<cr>
-"onoremap il( :<c-u>normal! F)v%<cr>
-"onoremap on( :<c-u>normal! f(v%<cr>
-"onoremap ol( :<c-u>normal! F)v%<cr>
-"onoremap in{ :<c-u>normal! f{vi}<cr>
-"onoremap il{ :<c-u>normal! F}vi{<cr>
-"onoremap on{ :<c-u>normal! f{vo}h<cr>
-"onoremap ol{ :<c-u>normal! F}v%<cr>
 
 augroup filetype_shortcuts
     autocmd!
