@@ -25,6 +25,8 @@ call plug#begin('~/.vim/plugged')
     " Syntax highlighting and language support
     Plug 'HerringtonDarkholme/yats.vim'
     Plug 'aklt/plantuml-syntax'
+    Plug 'StanAngeloff/php.vim'
+    Plug 'pprovost/vim-ps1'
 
     " Editing plugins
     Plug 'justinmk/vim-sneak'
@@ -181,8 +183,9 @@ augroup END
 " Ack settings
 " Let Ack searches happen in the background without blocking the UI.
 let g:ack_use_dispatch = 1
+let g:ack_default_options = '--ignore tags'
 if executable('ag')
-    let g:ackprg = 'ag --vimgrep'
+    let g:ackprg = 'ag --vimgrep --ignore tags'
 endif
 
 " Dispatch settings
@@ -198,9 +201,8 @@ let g:dispatch_no_job_make = 1
 
 " pdv settings
 let g:pdv_template_dir = expand("~/.vim/plugged/pdv/templates")
-if exists("*pdv#DocumentCurrentLine")
-    nnoremap <C-Return> :call pdv#DocumentCurrentLine()<cr>
-endif
+command! -nargs=0 Phpdoc call pdv#DocumentCurrentLine()
+nnoremap <C-Return> :call pdv#DocumentCurrentLine()<cr>
 
 " Gutentags settings
 let g:gutentags_ctags_exclude = [
@@ -245,6 +247,13 @@ nmap <leader>8 <Plug>AirlineSelectTab8
 nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>z <Plug>AirlineSelectPrevTab
 nmap <leader>x <Plug>AirlineSelectNextTab
+
+" Put the current date and time in the status line and keep it updated
+let g:airline_section_z='%p%% %#__accent_bold#%{g:airline_symbols.linenr}%l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#:%v %{strftime("%b %d %I:%M:%S%p")}'
+let status_update_timer = timer_start(1000, 'UpdateStatusBar',{'repeat':-1})
+function! UpdateStatusBar(timer)
+  execute 'let &ro = &ro'
+endfunction
 
 " CTags management
 " Set the tags file - look in current directory, the cpoptions uses CWD.
