@@ -9,24 +9,24 @@ endif
 " Set the runtime path - defaults to vimfiles on Windows.
 set rtp+=~/.vim
 
-" Per docs, must be set before ALE is loaded.
-let g:ale_completion_enabled = 0
-let g:ale_set_balloons = 1
-
 " Plug plugins - need plug.vim installed in ~/.vim/autoload/ ---{{{
 call plug#begin('~/.vim/plugged')
 
     " Utility plugins
     Plug 'tpope/vim-dispatch'
-    "Plug 'skywind3000/asyncrun.vim'
+    Plug 'skywind3000/asyncrun.vim'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
 
     " Syntax highlighting and language support
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
+    " TypeScript syntax
     Plug 'HerringtonDarkholme/yats.vim'
     Plug 'aklt/plantuml-syntax'
     Plug 'StanAngeloff/php.vim'
     Plug 'pprovost/vim-ps1'
+    Plug 'fatih/vim-go'
+    Plug 'pangloss/vim-javascript'
 
     " Editing plugins
     Plug 'justinmk/vim-sneak'
@@ -34,26 +34,26 @@ call plug#begin('~/.vim/plugged')
     Plug 'tpope/vim-surround'
     "Plug 'sjl/gundo.vim'
     Plug 'Chiel92/vim-autoformat'
-    Plug 'mattn/emmet-vim'
 
     " Project management plugins
     Plug 'scrooloose/nerdtree'
     Plug 'ctrlpvim/ctrlp.vim'
     Plug 'joonty/vim-sauce'
+    Plug 'liuchengxu/vista.vim'
     " Load on demand because this slows down startup.
     Plug 'majutsushi/tagbar', { 'on': 'TagbarOpenAutoClose' }
 
     " Functionality plugins
     Plug 'tpope/vim-fugitive'
     Plug 'mhinz/vim-signify'
-    Plug 'mileszs/ack.vim'
+    Plug 'pageer/ack.vim'
     Plug 'janko-m/vim-test'
-    Plug 'w0rp/ale'
     Plug 'ludovicchabant/vim-gutentags'
     Plug 'jlanzarotta/bufexplorer'
+    " Better buffer deletion
     Plug 'moll/vim-bbye'
     Plug 'tobyS/vmustache'
-    Plug 'tobyS/pdv'
+    Plug 'pageer/pdv'
 
     " Themes
     "Plug 'ayu-theme/ayu-vim'
@@ -99,6 +99,8 @@ call InitializeDirectories()
 
 " Start my actual customizations
 
+let g:sauce_path = expand("~/.vim/vimsauce/")
+
 " Make indentaiton 4 spaces
 set tabstop=4
 set softtabstop=0
@@ -106,11 +108,14 @@ set expandtab
 set shiftwidth=4
 set smarttab
 
+set fileformats=unix,dos
+
 set backspace=indent,eol,start
 set hlsearch
 set incsearch
 set nofoldenable
 set number
+set signcolumn=yes
 set visualbell
 syntax on
 
@@ -118,18 +123,21 @@ set grepprg=grep
 
 set guioptions-=t
 set guioptions-=T
-set guifont=Hack:h10
+set guifont=Hack\ Nerd\ Font\ Mono:h10,Hack:h10
 
 let g:gruvbox_contrast_dark = 'hard'
 
+"let g:go_def_mode='gopls'
+"let g:go_info_mode='gopls'
+
 " Set the color scheme if we have the proper support.
 if has("gui_running")
-    "color distinguished
     colorscheme gruvbox
     set cursorline
 elseif &t_Co == 256
-    "color distinguished
-    colorscheme gruvbox
+    if &shell == 'powershell'
+        colorscheme gruvbox
+    endif 
 endif
 
 " Key bindings
@@ -153,10 +161,17 @@ nnoremap <leader>e :NERDTreeToggle<CR>
 let NERDTreeIgnore = ['\.pyc$']
 "nmap <leader>nt :NERDTreeFind<CR>
 
+" Customizations for Vista outline viewer
+let g:vista_icon_indent = ["▸ ", ""]
+let g:vista#renderer#enable_icon = 1
+
 " Custom tagbar toggle that also focuses the tagbar.
 " Need the exec to load the plugin on demand, because it slows things down.
 command! -nargs=0 TagbarFocusToggle if exists('*tagbar#ToggleWindow') | call tagbar#ToggleWindow('f') | else | execute ":TagbarOpenAutoClose"| endif
 nnoremap <leader>tt :TagbarFocusToggle<CR>
+
+" Shortcuts for Vista code browser
+nnoremap <leader>v :Vista!!<CR>
 
 " Shortcut to list current buffers.
 nnoremap <leader>b :ls<CR>
@@ -171,9 +186,10 @@ endif
 " Toggle relative line numbers
 nnoremap <leader>r :set rnu!<CR>
 
-menu .1 &Utility.Toggle\ BufExplorer :ToggleBufExplorer<CR>
-menu .2 &Utility.Toggle\ NERDTree :NERDTreeToggle<CR>
-menu .3 &Utility.Fix\ Trailing\ Space :FixTrailingSpace<CR>
+menu .1 &Utility.BufExplorer :ToggleBufExplorer<CR>
+menu .2 &Utility.NERDTree :NERDTreeToggle<CR>
+menu .3 &Utility.Tagbar :TagbarFocusToggle<CR>
+menu .4 &Utility.Fix\ Trailing\ Space :FixTrailingSpace<CR>
 
 augroup FileExtensions
     autocmd!
@@ -182,9 +198,11 @@ augroup END
 
 " Ack settings
 " Let Ack searches happen in the background without blocking the UI.
-let g:ack_use_dispatch = 1
+let g:ack_use_dispatch = 0
 let g:ack_default_options = '--ignore tags'
-if executable('ag')
+if executable('rg')
+    let g:ackprg = 'rg --vimgrep'
+elseif executable('ag')
     let g:ackprg = 'ag --vimgrep --ignore tags'
 endif
 
@@ -204,27 +222,74 @@ let g:pdv_template_dir = expand("~/.vim/plugged/pdv/templates")
 command! -nargs=0 Phpdoc call pdv#DocumentCurrentLine()
 nnoremap <C-Return> :call pdv#DocumentCurrentLine()<cr>
 
+" vim-go settings
+let g:go_doc_popup_window = 1
+
 " Gutentags settings
 let g:gutentags_ctags_exclude = [
     \ '*.css', '*.json', '*.xml',
     \ '*.phar', '*.ini', '*.rst', '*.md',
     \ '*vendor*']
 
-" ALE settings
-let g:ale_sign_column_always = 1
-"if has("win32")
-"    let g:ale_php_langserver_executable = 'C:/Users/pgeer/AppData/Roaming/Composer/vendor/felixfbecker/language-server/bin/php-language-server.php'
-"    let g:ale_php_psalm_executable = 'C:/Users/pgeer/AppData/Roaming/Composer/vendor/vimeo/psalm/psalm-language-server'
-"else
-"    let g:ale_php_langserver_executable = '~/.composer/vendor/felixfbecker/language-server/bin/php-language-server.php'
-"endif
-"let g:ale_php_langserver_use_global = 1
-"set omnifunc=ale#completion#OmniFunc
-"let g:ale_linters = { 'php': ['langserver'] }
-"let g:ale_linters_explicit = 1
-"let g:ale_php_phpcs_standard = 'PSR2'
-"let g:ale_php_phpcs_executable = 'phpcs'
-"let g:ale_php_phpcs_use_global = 1
+" CoC settings
+let g:coc_config_home = expand("~/.vim")
+let g:coc_global_extensions = ['coc-html', 'coc-tsserver', 'coc-pyright', 'coc-powershell', 'coc-phpls', 'coc-go']
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) : 
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" Select current item on pressing enter
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Use K to show documentation in preview window.
+"nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> K :call CocActionAsync('doHover')<CR>
+nnoremap <silent><nowait> <leader>s :CocList -I symbols<CR>
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <leader>rn <Plug>(coc-rename)
+nmap <leader>rf <Plug>(coc-refactor)
+
+"function! s:show_documentation()
+"  if (index(['vim','help'], &filetype) >= 0)
+"    execute 'h '.expand('<cword>')
+"  elseif (coc#rpc#ready())
+"    call CocActionAsync('doHover')
+"  else
+"    execute '!' . &keywordprg . " " . expand('<cword>')
+"  endif
+"endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+if has("gui_running")
+    menu .1 &CoC.List\ Diagnostics :CocList diagnostics<CR>
+    menu .2 &CoC.Outline :CocList outline<CR>
+    menu .3 &CoC.Commands :CocList commands<CR>
+    menu .4 &CoC.Extensions :CocList extensions<CR>
+endif
 
 " Airline settings
 set encoding=utf-8
@@ -249,11 +314,11 @@ nmap <leader>z <Plug>AirlineSelectPrevTab
 nmap <leader>x <Plug>AirlineSelectNextTab
 
 " Put the current date and time in the status line and keep it updated
-let g:airline_section_z='%p%% %#__accent_bold#%{g:airline_symbols.linenr}%l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#:%v %{strftime("%b %d %I:%M:%S%p")}'
-let status_update_timer = timer_start(1000, 'UpdateStatusBar',{'repeat':-1})
-function! UpdateStatusBar(timer)
-  execute 'let &ro = &ro'
-endfunction
+"let g:airline_section_z='%p%% %#__accent_bold#%{g:airline_symbols.linenr}%l%#__restore__#%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#:%v %{strftime("%b %d %I:%M:%S%p")}'
+"let status_update_timer = timer_start(1000, 'UpdateStatusBar',{'repeat':-1})
+"function! UpdateStatusBar(timer)
+"  execute 'let &ro = &ro'
+"endfunction
 
 " CTags management
 " Set the tags file - look in current directory, the cpoptions uses CWD.
@@ -265,6 +330,22 @@ command! -nargs=0 FixTrailingSpace call execute("normal! mp:%s/\\s\\+$//e\<cr>`p
 
 " phpunit settings
 "let g:phpunit_tmpfile = expand("~/AppData/Local/Temp/vim_phpunit.out")
+
+" Prompt for jump to location.
+function! GotoJump()
+  jumps
+  let j = input("Please select your jump: ")
+  if j != ''
+    let pattern = '\v\c^\+'
+    if j =~ pattern
+      let j = substitute(j, pattern, '', 'g')
+      execute "normal " . j . "\<c-i>"
+    else
+      execute "normal " . j . "\<c-o>"
+    endif
+  endif
+endfunction
+nmap <leader>j :call GotoJump()<CR>
 
 " toggles the quickfix window. ---{{{
 let g:jah_Quickfix_Win_Height = 10
@@ -333,8 +414,8 @@ nnoremap <leader>w :match Error /\v +$/<CR>
 nnoremap <leader>W :match none<CR>
 nnoremap / /\v
 "nnoremap <leader>g :silent execute "grep! -R " . shellescape(expand("<cWORD>")) . " ."<cr>:copen<cr>
-nnoremap <leader>a :cprevious
-nnoremap <leader>s :cnext
+"nnoremap <leader>a :cprevious
+"nnoremap <leader>s :cnext
 
 augroup filetype_shortcuts
     autocmd!
