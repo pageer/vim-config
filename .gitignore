@@ -1,4 +1,7 @@
 vimfiles/plugged/
+vimfiles/vimsauce/
 LVSTHW/
 coc-settings.json
 tags
+tags.temp
+tags.lock
