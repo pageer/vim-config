@@ -209,6 +209,9 @@ set smarttab
 
 set fileformats=unix,dos
 
+" Allows you to maintain undo history when switching buffers
+set hidden
+
 set backspace=indent,eol,start
 set hlsearch
 set incsearch
@@ -482,13 +485,13 @@ command! -nargs=0 TagbarFocusToggle if exists('*tagbar#ToggleWindow') | call tag
 " Airline settings
 set encoding=utf-8
 let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#ale_enabled = 1
 let g:airline_skip_empty_sections = 1
+let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#ale_enabled = 1
 let g:airline#extensions#gutentags#enabled = 1
-set laststatus=2
-
+let g:airline#extensions#coc#enabled = 1
 let g:airline#extensions#tabline#buffer_idx_mode = 1
+set laststatus=2
 
 " vim-test settings
 let g:test#runner_commands = ['PHPUnit', 'Nose']
