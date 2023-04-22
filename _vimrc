@@ -225,9 +225,14 @@ set grepprg=grep
 
 set guioptions-=t
 set guioptions-=T
-set guifont=Hack\ Nerd\ Font\ Mono:h10,Hack:h10
+if has('win32')
+    set guifont=Hack\ Nerd\ Font\ Mono:h10,Hack:h10,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
+else
+    set guifont=Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
+endif
 
 let g:gruvbox_contrast_dark = 'hard'
+set bg=dark
 
 " Set the color scheme if we have the proper support.
 if has("gui_running")
