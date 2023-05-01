@@ -9,6 +9,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'skywind3000/asyncrun.vim'
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
+    Plug 'ryanoasis/vim-devicons'
 
     " Syntax highlighting and language support
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -31,7 +32,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'scrooloose/nerdtree'
     Plug 'ctrlpvim/ctrlp.vim'
     Plug 'joonty/vim-sauce'
-    Plug 'liuchengxu/vista.vim'
+    "Plug 'liuchengxu/vista.vim'
     " Load on demand because this slows down startup.
     Plug 'majutsushi/tagbar', { 'on': 'TagbarOpenAutoClose' }
 
@@ -226,7 +227,7 @@ set grepprg=grep
 set guioptions-=t
 set guioptions-=T
 if has('win32')
-    set guifont=Hack\ Nerd\ Font\ Mono:h10,Hack:h10,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
+    set guifont=Hack\ NFM:h11,Hack\ Nerd\ Font\ Mono:h101Hack:h11,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 else
     set guifont=Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 endif
@@ -276,7 +277,7 @@ nnoremap <leader>e :NERDTreeToggle<CR>
 nnoremap <leader>tt :TagbarFocusToggle<CR>
 
 " Shortcuts for Vista code browser
-nnoremap <leader>v :Vista!!<CR>
+"nnoremap <leader>v :Vista!!<CR>
 
 " Shortcut to list current buffers.
 nnoremap <leader>b :ls<CR>
@@ -427,10 +428,25 @@ nnoremap / /\v
 
 "NERDTree settings
 let NERDTreeIgnore = ['\.pyc$']
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" Set arrow icons
+if nerdtree#runningWindows()
+    let g:NERDTreeDirArrowExpandable = "▸"
+    let g:NERDTreeDirArrowCollapsible = "▾"
+else
+    let g:NERDTreeDirArrowExpandable = "+"
+    let g:NERDTreeDirArrowCollapsible = "~"
+endif
 
 " Vista outline viewer
-let g:vista_icon_indent = ["▸ ", ""]
-let g:vista#renderer#enable_icon = 1
+"let g:vista_icon_indent = ["▸ ", ""]
+"let g:vista#renderer#enable_icon = 1
 
 " Ack settings
 " Let Ack searches happen in the background without blocking the UI.
@@ -500,6 +516,11 @@ set laststatus=2
 
 " vim-test settings
 let g:test#runner_commands = ['PHPUnit', 'Nose']
+let test#strategy = 'vimterminal'
+if has('win32')
+    " Windows cmd.exe doesn't like ./vendor/bin/
+    let test#php#phpunit#executable = 'vendor\bin\phpunit.bat'
+endif
 
 " phpunit settings
 "let g:phpunit_tmpfile = expand("~/AppData/Local/Temp/vim_phpunit.out")
