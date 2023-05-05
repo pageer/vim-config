@@ -196,6 +196,12 @@ command! -bang -nargs=? QFix call QFixToggle()
 " Remove trailing spaces from file.
 command! -nargs=0 FixTrailingSpace call execute("normal! mp:%s/\\s\\+$//e\<cr>`p")
 
+if has("win32")
+    command! -nargs=0 Term call execute("belowright terminal ++close powershell")
+else
+    command! -nargs=0 Term call execute("belowright terminal ++close")
+endif
+
 " End Initialization ---}}}
 
 
