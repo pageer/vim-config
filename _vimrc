@@ -46,7 +46,7 @@ call plug#begin('~/.vim/plugged')
     " Better buffer deletion
     Plug 'moll/vim-bbye'
     Plug 'tobyS/vmustache'
-    "Plug 'pageer/pdv'
+    Plug 'pageer/pdv'
 
     " Themes
     "Plug 'ayu-theme/ayu-vim'
@@ -308,8 +308,9 @@ inoremap <silent><expr> <TAB>
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " Select current item on pressing enter
-inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" This doesn't seem to work properly with intelephpense - when entering a 
+" PHPDoc comment, it writes the comment but deletes a bunch of code.
+"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : '\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>'
 
 " Use <c-space> to trigger completion.
 if has('nvim')
