@@ -170,6 +170,13 @@ function! QuickfixToggle()
     endif
 endfunction
 
+function! SauceList()
+    let file_list = split(glob(g:sauce_path . '/*')) 
+    for file_path in file_list
+        echo fnamemodify(file_path, ':t:r')
+    endfor
+endfunction
+
 " End Custom Functions ---}}}
 
 
@@ -201,6 +208,9 @@ if has("win32")
 else
     command! -nargs=0 Term call execute("belowright terminal ++close")
 endif
+
+" Since vim-sauce doesn't have a 'list' command...
+command! -nargs=0 SauceList call SauceList()
 
 " End Initialization ---}}}
 
@@ -443,13 +453,8 @@ autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTr
 " Close the tab if NERDTree is the only window remaining in it.
 autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 " Set arrow icons
-if nerdtree#runningWindows()
-    let g:NERDTreeDirArrowExpandable = "▸"
-    let g:NERDTreeDirArrowCollapsible = "▾"
-else
-    let g:NERDTreeDirArrowExpandable = "+"
-    let g:NERDTreeDirArrowCollapsible = "~"
-endif
+let g:NERDTreeDirArrowExpandable = "▸"
+let g:NERDTreeDirArrowCollapsible = "▾"
 
 " Vista outline viewer
 "let g:vista_icon_indent = ["▸ ", ""]
