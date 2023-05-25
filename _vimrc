@@ -30,6 +30,11 @@ call plug#begin('~/.vim/plugged')
 
     " Project management plugins
     Plug 'scrooloose/nerdtree'
+    Plug 'lambdalisue/fern.vim', { 'branch': 'main' }
+    if has("lua")
+        Plug 'obaland/vfiler.vim'
+        Plug 'obaland/vfiler-column-devicons'
+    endif
     Plug 'ctrlpvim/ctrlp.vim'
     Plug 'joonty/vim-sauce'
     "Plug 'liuchengxu/vista.vim'
@@ -105,10 +110,15 @@ function! GotoJump()
     endif
   endif
 endfunction
-nmap <leader>j :call GotoJump()<CR>
+nnoremap <leader>j :call GotoJump()<CR>
 
 " For use in tab trigger
 function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
@@ -282,6 +292,13 @@ nnoremap <leader>e :NERDTreeToggle<CR>
 " TagBar toggling
 nnoremap <leader>tt :TagbarFocusToggle<CR>
 
+" Vim-test running
+nnoremap <leader>tf :TestFile<CR>
+nnoremap <leader>tn :TestNearest<CR>
+nnoremap <leader>ts :TestSuite<CR>
+nnoremap <leader>tl :TestLast<CR>
+nnoremap <leader>tv :TestVisit<CR>
+
 " Shortcuts for Vista code browser
 "nnoremap <leader>v :Vista!!<CR>
 
@@ -302,15 +319,15 @@ nnoremap <leader>r :set rnu!<CR>
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
-      \ coc#pum#visible() ? coc#pum#next(1) : 
-      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
 
 " Select current item on pressing enter
 " This doesn't seem to work properly with intelephpense - when entering a 
 " PHPDoc comment, it writes the comment but deletes a bunch of code.
-"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : '\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>'
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : '<C-g>u<CR><c-r>=coc#on_enter()<CR>'
 
 " Use <c-space> to trigger completion.
 if has('nvim')
