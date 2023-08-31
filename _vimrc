@@ -23,6 +23,7 @@ call plug#begin('~/.vim/plugged')
 
     " Editing plugins
     Plug 'justinmk/vim-sneak'
+    Plug 'easymotion/vim-easymotion'
     Plug 'tpope/vim-repeat'
     Plug 'tpope/vim-surround'
     "Plug 'sjl/gundo.vim'
@@ -441,7 +442,7 @@ nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>z <Plug>AirlineSelectPrevTab
 nmap <leader>x <Plug>AirlineSelectNextTab
 
-nnoremap <leader>q :call QFixToggle()<cr>
+nnoremap <leader><leader>q :call QFixToggle()<cr>
 nnoremap <leader>f :call FoldColumnToggle()<cr>
 
 nnoremap <leader>ve :vsplit $MYVIMRC<CR>
