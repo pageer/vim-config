@@ -20,6 +20,7 @@ call plug#begin('~/.vim/plugged')
     Plug 'pprovost/vim-ps1'
     Plug 'fatih/vim-go'
     Plug 'pangloss/vim-javascript'
+    Plug 'udalov/kotlin-vim'
 
     " Editing plugins
     Plug 'justinmk/vim-sneak'
