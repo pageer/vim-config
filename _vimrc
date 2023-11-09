@@ -441,7 +441,7 @@ nmap <leader>9 <Plug>AirlineSelectTab9
 nmap <leader>z <Plug>AirlineSelectPrevTab
 nmap <leader>x <Plug>AirlineSelectNextTab
 
-nnoremap <leader>q :call QFixToggle()<cr>
+nnoremap <leader>qq :call QFixToggle()<cr>
 nnoremap <leader>f :call FoldColumnToggle()<cr>
 
 nnoremap <leader>ve :vsplit $MYVIMRC<CR>
