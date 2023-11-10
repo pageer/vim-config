@@ -1,0 +1,17 @@
+let mapleader=","
+inoremap jk <Esc>
+set sneak
+set easymotion
+
+"nmap gr <Action>(com.maddyhome.idea.vim.action.motion.search.GotoImplementation)
+nmap gr <Action>(FindUsages)
+nmap <C-P> <Action>(GotoFile)
+
+" Overrides for window handling
+nnoremap <C-J> <C-W>j
+nnoremap <C-K> <C-W>k
+nnoremap <C-L> <C-W>l
+nnoremap <C-H> <C-W>h
+
+" Toggle relative line numbers
+nnoremap <leader>r :set rnu!<CR>
