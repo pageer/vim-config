@@ -255,7 +255,7 @@ set grepprg=grep
 set guioptions-=t
 set guioptions-=T
 if has('win32')
-    set guifont=Hack\ NFM:h11,Hack\ Nerd\ Font\ Mono:h101Hack:h11,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
+    set guifont=Hack\ NFM:h11,Hack\ Nerd\ Font\ Mono:h10,Hack:h11,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 else
     set guifont=Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 endif
