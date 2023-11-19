@@ -1,17 +1,30 @@
-let mapleader=","
-inoremap jk <Esc>
+" Enable IDEAVim Sneak plugin
 set sneak
-set easymotion
 
-"nmap gr <Action>(com.maddyhome.idea.vim.action.motion.search.GotoImplementation)
-nmap gr <Action>(FindUsages)
-nmap <C-P> <Action>(GotoFile)
+let mapleader = ","
+let maplocalleader = ","
 
-" Overrides for window handling
+" Easier escaping
+inoremap jk <Esc>
+
+" Less annoying buffer swapping
+inoremap <C-Tab> <C-^>
+nnoremap <C-Tab> <C-^>
+
+" Move between windows with just ctrl+movement
 nnoremap <C-J> <C-W>j
 nnoremap <C-K> <C-W>k
 nnoremap <C-L> <C-W>l
 nnoremap <C-H> <C-W>h
 
-" Toggle relative line numbers
-nnoremap <leader>r :set rnu!<CR>
+set hlsearch
+set incsearch
+
+nnoremap <leader>e :action ActivateProjectToolWindow<CR>
+nnoremap <leader>d :action CloseContent<CR>
+
+nmap <silent> gd :action GotoDeclarationOnly<CR>
+nmap <silent> gi :action GotoImplementation<CR>
+nmap gr <Action>(FindUsages)
+nmap <C-P> <Action>(GotoFile)
+
