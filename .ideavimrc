@@ -8,8 +8,8 @@ let maplocalleader = ","
 inoremap jk <Esc>
 
 " Less annoying buffer swapping
-inoremap <C-Tab> <C-^>
-nnoremap <C-Tab> <C-^>
+inoremap <C-Tab> <C-6>
+nnoremap <C-Tab> <C-6>
 
 " Move between windows with just ctrl+movement
 nnoremap <C-J> <C-W>j
