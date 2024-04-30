@@ -1,6 +1,9 @@
 " Enable IDEAVim Sneak plugin
 set sneak
 
+" Suppress annoying bell sound
+set visualbell
+
 let mapleader = ","
 let maplocalleader = ","
 
@@ -20,11 +23,14 @@ nnoremap <C-H> <C-W>h
 set hlsearch
 set incsearch
 
+!command Git action ActivateCommitToolWindow
+
 nnoremap <leader>e :action ActivateProjectToolWindow<CR>
 nnoremap <leader>d :action CloseContent<CR>
 
 nmap <silent> gd :action GotoDeclarationOnly<CR>
 nmap <silent> gi :action GotoImplementation<CR>
+nmap <leader>rn :action RenameElement
 nmap gr <Action>(FindUsages)
 nmap <C-P> <Action>(GotoFile)
 
