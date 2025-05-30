@@ -54,6 +54,11 @@ call plug#begin('~/.vim/plugged')
     Plug 'moll/vim-bbye'
     Plug 'tobyS/vmustache'
     Plug 'pageer/pdv'
+    Plug 'github/copilot.vim', {'branch': 'release'}
+    if has("nvim")
+        Plug 'nvim-lua/plenary.nvim'
+        Plug 'CopilotC-Nvim/CopilotChat.nvim', {'branch': 'main'}
+    endif
 
     " Themes
     "Plug 'ayu-theme/ayu-vim'
@@ -255,7 +260,7 @@ set grepprg=grep
 set guioptions-=t
 set guioptions-=T
 if has('win32')
-    set guifont=Hack\ NFM:h11,Hack\ Nerd\ Font\ Mono:h10,Hack:h11,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
+    set guifont=Hack\ NFM:h11 ",Hack\ Nerd\ Font\ Mono:h10,Hack:h11,Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 else
     set guifont=Hack\ Nerd\ Font\ 12,Ubuntu\ Mono\ 12
 endif
@@ -269,6 +274,11 @@ if has("gui_running")
     set cursorline
 elseif &t_Co == 256
     colorscheme gruvbox
+endif
+
+if has("nvim")
+    set termguicolors
+    hi statusline gui=NONE
 endif
 
 " CTags management
