@@ -10,8 +10,7 @@ call plug#begin('~/.vim/plugged')
 
     " Syntax highlighting and language support
     Plug 'neoclide/coc.nvim', {'branch': 'release'}
-    " TypeScript syntax
-    Plug 'HerringtonDarkholme/yats.vim'
+    Plug 'HerringtonDarkholme/yats.vim'   " TypeScript syntax
     Plug 'aklt/plantuml-syntax'
     Plug 'StanAngeloff/php.vim'
     Plug 'pprovost/vim-ps1'
@@ -30,10 +29,10 @@ call plug#begin('~/.vim/plugged')
     " Project management plugins
     Plug 'scrooloose/nerdtree'
     Plug 'lambdalisue/fern.vim', { 'branch': 'main' }
-    if has("lua")
-        Plug 'obaland/vfiler.vim'
-        Plug 'obaland/vfiler-column-devicons'
-    endif
+    "if has("lua")
+        "Plug 'obaland/vfiler.vim'
+        "Plug 'obaland/vfiler-column-devicons'
+    "endif
     Plug 'ctrlpvim/ctrlp.vim'
     Plug 'joonty/vim-sauce'
     "Plug 'liuchengxu/vista.vim'
@@ -55,6 +54,8 @@ call plug#begin('~/.vim/plugged')
     if has("nvim")
         Plug 'nvim-lua/plenary.nvim'
         Plug 'CopilotC-Nvim/CopilotChat.nvim', {'branch': 'main'}
+        Plug 'nvzone/volt', {'branch': 'main'}
+        Plug 'nvzone/menu', {'branch': 'main'}
     endif
 
     " Themes
