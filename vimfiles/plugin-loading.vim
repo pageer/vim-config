@@ -27,8 +27,13 @@ call plug#begin('~/.vim/plugged')
     Plug 'Chiel92/vim-autoformat'
 
     " Project management plugins
-    Plug 'scrooloose/nerdtree'
-    Plug 'lambdalisue/fern.vim', { 'branch': 'main' }
+    if has("nvim")
+        Plug 'nvim-tree/nvim-web-devicons'
+        Plug 'nvim-tree/nvim-tree.lua'
+    else
+        Plug 'scrooloose/nerdtree'
+    endif 
+    "Plug 'lambdalisue/fern.vim', { 'branch': 'main' }
     "if has("lua")
         "Plug 'obaland/vfiler.vim'
         "Plug 'obaland/vfiler-column-devicons'

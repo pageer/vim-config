@@ -10,5 +10,6 @@ else
       source ~/.vimrc
     endif
 
-    source ~/.vim/nvim-config.vim
+    source ~/.vim/nvim-config.lua
 endif
+

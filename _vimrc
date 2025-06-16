@@ -10,7 +10,9 @@ source ~/.vim/base-config.vim
 " Build on the base config with my customizations
 source ~/.vim/sauce-config.vim
 source ~/.vim/coc-config.vim
-source ~/.vim/nerdtree-config.vim
+if !has("nvim")
+    source ~/.vim/nerdtree-config.vim
+endif
 source ~/.vim/tagbar-config.vim
 source ~/.vim/airline-config.vim
 source ~/.vim/vimtest-config.vim
