@@ -27,33 +27,12 @@ require("CopilotChat").setup {
     }
   },
 }
+vim.keymap.set('n', '<leader>cc', ':CopilotChatToggle<CR>', { noremap = true, silent = true })
+
 -- The default tab mapping conflicts with coc.nvim, so we use <C-Tab> instead
 --map('i', '<C-Tab>', 'copilot#Accept("<CR>")', { expr = true, silent = true })
 
 vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
-
--- Keyboard users
-vim.keymap.set("n", "<leader>m", function()
-  require("menu").open("default")
-end, {})
-
--- mouse users + nvimtree users!
-vim.keymap.set(
-    { "n", "v" },
-    "<RightMouse>",
-    function()
-      require('menu.utils').delete_old_menus()
-
-      vim.cmd.exec '"normal! \\<RightMouse>"'
-
-      -- clicked buf
-      local buf = vim.api.nvim_win_get_buf(vim.fn.getmousepos().winid)
-      local options = vim.bo[buf].ft == "NvimTree" and "nvimtree" or "default"
-
-      require("menu").open(options, { mouse = true })
-    end,
-    {}
-)
 
 local custom_menu = {
   {
@@ -84,13 +63,37 @@ local custom_menu = {
     items = "lsp",
   },
 
-  {
-    name = "Copilot Actions",
-    cmd = function ()
-      vim.cmd "CopilotChatOpen"
-    end,
-  },
+  { name = "separator" },
 
+  {
+      name = " Copilot",
+      items = {
+          {
+            name = "Chat",
+            cmd = function ()
+              vim.cmd "CopilotChatToggle"
+            end,
+          },
+          {
+            name = "Save Chat",
+            cmd = function ()
+              vim.cmd "CopilotChatSave"
+            end,
+          },
+          {
+            name = "Models",
+            cmd = function ()
+              vim.cmd "CopilotChatModels"
+            end,
+          },
+          {
+            name = "Agents",
+            cmd = function ()
+              vim.cmd "CopilotChatAgents"
+            end,
+          },
+      },
+  },
 
   { name = "separator" },
 
@@ -148,7 +151,28 @@ local custom_menu = {
   },
 }
 
---require("menu").setup({
-  --custom_menu = custom_menu,
---})
+-- Keyboard users
+vim.keymap.set("n", "<leader>m", function()
+  local buf = vim.api.nvim_get_current_buf()
+  local my_menu = vim.bo[buf].ft == "NvimTree" and "nvimtree" or custom_menu 
+  require("menu").open(my_menu)
+end, {})
+
+-- mouse users + nvimtree users!
+vim.keymap.set(
+    { "n", "v" },
+    "<RightMouse>",
+    function()
+      require('menu.utils').delete_old_menus()
+
+      vim.cmd.exec '"normal! \\<RightMouse>"'
+
+      -- clicked buf
+      local buf = vim.api.nvim_win_get_buf(vim.fn.getmousepos().winid)
+      local my_menu = vim.bo[buf].ft == "NvimTree" and "nvimtree" or custom_menu 
+
+      require("menu").open(my_menu, { mouse = true })
+    end,
+    {}
+)
 
